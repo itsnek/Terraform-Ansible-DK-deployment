@@ -1,0 +1,4 @@
+vars:
+  users: 
+    - { 'Username': 'duser', 'Key': '~/.ssh/id_rsa.pub' }
+    - { 'Username': 'kuser', 'Key': '~/.ssh/id_rsa.pub' }

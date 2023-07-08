@@ -1,0 +1,5 @@
+vars:
+  container_count: 2
+  default_container_name: dkb
+  default_container_image: ubuntu
+  default_container_command: sleep 1

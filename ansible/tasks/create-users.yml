@@ -1,0 +1,19 @@
+- name: create user
+  user: 
+    name: "{{item['Username']}}" 
+    append: yes 
+    state: present 
+    createhome: yes 
+    shell: /bin/bash
+  loop: "{{users}}"
+
+- name: allow new user to have passwordless sudo
+  lineinfile:
+    dest: /etc/sudoers
+    line: '{{item["Username"]}} ALL=(ALL) NOPASSWD: ALL'
+    validate: 'visudo -cf %s'
+  loop: "{{users}}"
+
+- name: set up authorized keys for the new user
+  authorized_key: user="{{item['Username']}}" key="{{lookup('file', item['Key'])}}"
+  loop: "{{users}}"

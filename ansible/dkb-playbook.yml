@@ -1,0 +1,64 @@
+#################################################
+#    Docker-Kubernetes installation playbook    #
+#################################################
+---
+
+- hosts: all
+  become: true
+  name: Setup server
+  vars_files:
+    # - variables/users.yml
+    - variables/docker.yml
+  tags: setup_server
+
+  pre_tasks:
+    - name: Install aptitude using apt
+      apt: 
+        name=aptitude 
+        state=latest 
+        update_cache=yes 
+        force_apt_get=yes
+      tags: aptitude
+
+    - name: Install required system packages
+      apt: 
+        name={{ item }} 
+        state=latest 
+        update_cache=yes
+      loop: [ 'apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common', 'net-tools', 'vim' ]
+      tags: apt_installs
+
+  tasks:
+    - name: Create and setup new users
+      include_vars: variables/users.yml
+      import_tasks: tasks/create-users.yml
+      tags: create_users
+
+    - name: Install docker
+      import_tasks: tasks/docker-installation.yml
+      tags: docker_install
+
+    - name: Install Kubernetes
+      import_tasks: tasks/kubernetes-installation.yml
+      tags: kube_install
+    
+- hosts: master
+  become: yes
+  gather_facts: false
+  name: Initialize and set up the cluster and master node 
+
+  tasks:
+    - name: Initialize cluster
+      import_tasks: tasks/init_cluster.yml
+      tags: init_cluster
+
+- hosts: worker
+  become: yes
+  name: Add a worker node in kubernetes cluster
+  tasks:
+    - name: join cluster
+      shell: "{{ hostvars['master'].join_command }} >> node_joined.txt"
+      args:
+        chdir: $HOME
+        creates: node_joined.txt
+      tags: add_worker
