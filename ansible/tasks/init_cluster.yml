@@ -39,7 +39,10 @@
     creates: pod_network_setup.txt
 
 - name: restart kubelet
-  shell: systemctl restart kubelet.service
+  service: name=kubelet state=restarted
+
+- name: untaint nodes 
+  shell: kubectl taint nodes --all node-role.kubernetes.io/control-plane-
 
 # Create and save join token
 - name: get join command

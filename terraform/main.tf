@@ -28,7 +28,7 @@ resource "virtualbox_vm" "node" {
 }
 
 data "template_file" "dev_hosts" {
-  template = "${file("${path.module}/ansible/hosts.yml")}"
+  template = "${file("${path.module}/../ansible/hosts.yml")}"
   depends_on = [
     virtualbox_vm.node
   ]
@@ -45,7 +45,7 @@ resource "null_resource" "dev-hosts" {
   }
   provisioner "local-exec" {
     interpreter = ["bash", "-c"]
-    command = "echo '${data.template_file.dev_hosts.rendered}' > ./templates/dev_hosts.cfg && ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook dkb-playbook.yml -u vagrant -i ./templates/dev_hosts.cfg --private-key ${var.vag_pvt_key} -e 'pub_key=.${var.vag_pub_key}'" //${var.playbook}
+    command = "echo '${data.template_file.dev_hosts.rendered}' > ./templates/dev_hosts.cfg && ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook ../ansible/dkb-playbook.yml -u vagrant -i templates/dev_hosts.cfg --private-key ${var.vag_pvt_key} -e 'pub_key=.${var.vag_pub_key}'" //${var.playbook}
   }
 }
 

@@ -6,10 +6,10 @@
 - hosts: all
   become: true
   name: Setup server
-  vars_files:
-    # - variables/users.yml
-    - variables/docker.yml
   tags: setup_server
+  vars_files:
+    - variables/users.yml
+    - variables/docker.yml
 
   pre_tasks:
     - name: Install aptitude using apt
@@ -30,7 +30,11 @@
 
   tasks:
     - name: Create and setup new users
-      include_vars: variables/users.yml
+      # include_vars: variables/users.yml
+      vars:
+        users: 
+          - { 'Username': 'duser', 'Key': '~/.ssh/id_rsa.pub' }
+          - { 'Username': 'kuser', 'Key': '~/.ssh/id_rsa.pub' }
       import_tasks: tasks/create-users.yml
       tags: create_users
 
