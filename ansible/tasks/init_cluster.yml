@@ -12,7 +12,7 @@
     creates: cluster_initialized.txt
 
 - name: create .kube directory
-  become: yes
+  become: true
   become_user: kuser
   file:
     path: $HOME/.kube
